@@ -180,7 +180,7 @@ server <- function(input, output) {
   },width = "100%")
   
   
-  #数据处理
+  
   f_sex <- eventReactive(input$XB,{
     ifelse(input$XB == "Male", "M", "F")
   })
@@ -227,7 +227,7 @@ server <- function(input, output) {
   })
   
   
-  #数据形式转换，保证和模型内变量相同
+  #factor
   
   f_surv <- reactive(data.frame(ID = input$ID,  NL = as.numeric(input$NL), 
                                 XB = factor(f_sex(), levels = c("M", "F")),
@@ -245,14 +245,14 @@ server <- function(input, output) {
                                 JX_CA125 = as.numeric(input$JX_CA125)))
   
   
-  #定义预测函数
+  #predict function
   predict <- eventReactive(input$file1,{
     infile <- input$file1
     if(!is.null(infile))
       prediction(surv = f_surv(), data_example = read.csv(infile$datapath, header = TRUE))
   })
   
-  #根据定义的预测函数估计风险并画图  
+  #prediction prob  
   output$dynamic_prediction <- renderPlot({
     return(plot(long_example = predict()[[1]], pred_marker = predict()[[2]], pred_prob = predict()[[3]]))
   })
